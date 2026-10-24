@@ -156,9 +156,9 @@
                 <button id="close-replay-btn" class="primary-btn">Resume Active Game</button>
             </div>
 
-            <div style="position:relative;width:480px;height:480px;">
-                <div id="myBoard" style="width:480px;min-width:480px;flex-shrink:0;position:relative;"></div>
-                <svg id="board-arrows-svg" viewBox="0 0 480 480" style="position:absolute;top:0;left:0;width:480px;height:480px;pointer-events:none;z-index:15;"></svg>
+            <div class="chessboard-shell">
+                <div id="myBoard"></div>
+                <svg id="board-arrows-svg" viewBox="0 0 480 480" aria-hidden="true"></svg>
 
                 <!-- ══ CHESS.COM STYLE PROMOTION DIALOG ══════════════════ -->
                 <div id="promotion-dialog" class="promotion-dialog" style="display:none;">
