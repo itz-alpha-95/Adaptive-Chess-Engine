@@ -27,6 +27,6 @@ start "" "%~dp0index.html"
 
 echo.
 echo OmegaChess is running!
-echo C++ Backend: http://localhost:8080
+echo C++ Backend: https://itz-alpha-95.github.io/Adaptive-Chess-Engine/#
 echo.
 pause
