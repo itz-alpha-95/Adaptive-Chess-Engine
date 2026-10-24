@@ -1,0 +1,47 @@
+Match: club vs expert | 24 games | 24 opening lines x 2 colours
+  club        avg level  5.0 | depth 2, capture search 4, noise 20 cp
+  expert      avg level 10.0 | depth 3, capture search 9, noise  0 cp
+  game   1  opening  1  club      vs expert     0-1     (checkmate, 110 plies)  expert: 1.0/1
+  game   2  opening  1  expert    vs club       1/2-1/2 (repetition, 92 plies)  expert: 1.5/2
+  game   3  opening  2  club      vs expert     0-1     (checkmate, 76 plies)  expert: 2.5/3
+  game   4  opening  2  expert    vs club       1-0     (checkmate, 61 plies)  expert: 3.5/4
+  game   5  opening  3  club      vs expert     0-1     (checkmate, 84 plies)  expert: 4.5/5
+  game   6  opening  3  expert    vs club       1-0     (checkmate, 85 plies)  expert: 5.5/6
+  game   7  opening  4  club      vs expert     0-1     (checkmate, 64 plies)  expert: 6.5/7
+  game   8  opening  4  expert    vs club       1-0     (checkmate, 29 plies)  expert: 7.5/8
+  game   9  opening  5  club      vs expert     0-1     (checkmate, 108 plies)  expert: 8.5/9
+  game  10  opening  5  expert    vs club       1-0     (checkmate, 71 plies)  expert: 9.5/10
+  game  11  opening  6  club      vs expert     1/2-1/2 (repetition, 53 plies)  expert: 10.0/11
+  game  12  opening  6  expert    vs club       1-0     (checkmate, 47 plies)  expert: 11.0/12
+  game  13  opening  7  club      vs expert     0-1     (checkmate, 98 plies)  expert: 12.0/13
+  game  14  opening  7  expert    vs club       1/2-1/2 (repetition, 61 plies)  expert: 12.5/14
+  game  15  opening  8  club      vs expert     0-1     (checkmate, 74 plies)  expert: 13.5/15
+  game  16  opening  8  expert    vs club       1/2-1/2 (repetition, 137 plies)  expert: 14.0/16
+  game  17  opening  9  club      vs expert     0-1     (checkmate, 80 plies)  expert: 15.0/17
+  game  18  opening  9  expert    vs club       1-0     (checkmate, 35 plies)  expert: 16.0/18
+  game  19  opening 10  club      vs expert     0-1     (checkmate, 164 plies)  expert: 17.0/19
+  game  20  opening 10  expert    vs club       1-0     (checkmate, 137 plies)  expert: 18.0/20
+  game  21  opening 11  club      vs expert     0-1     (checkmate, 64 plies)  expert: 19.0/21
+  game  22  opening 11  expert    vs club       1/2-1/2 (repetition, 145 plies)  expert: 19.5/22
+  game  23  opening 12  club      vs expert     1/2-1/2 (repetition, 116 plies)  expert: 20.0/23
+  game  24  opening 12  expert    vs club       1-0     (checkmate, 115 plies)  expert: 21.0/24
+
+RESULT  expert scored 21.0 / 24 (87.5%)  W 18  D 6  L 0
+Implied Elo difference (expert - club): +338
+
+Style profile: average raw score of the positions each side reached
+(after its own moves, from its own point of view; higher = better for that side)
+  factor                  club     expert      B - A
+  Material              -163.9      235.2     +399.1
+  Development             -5.8        6.8      +12.7
+  Center control          -4.3        6.5      +10.9
+  Piece placement        -41.3       46.5      +87.8
+  Mobility               -13.1       17.1      +30.2
+  King safety            -12.3       13.9      +26.2
+  Pawn structure          -9.8        8.5      +18.3
+  Passed pawns           -10.4       11.8      +22.2
+  Bishop pair             -2.6        3.5       +6.1
+  Rook activity           -5.8        6.6      +12.5
+  Knight outposts         -0.5        0.7       +1.2
+  Threat awareness         0.6        5.0       +4.4
+  King attack             -1.2        2.0       +3.2

@@ -1,0 +1,47 @@
+Match: A vs B | 24 games | 24 opening lines x 2 colours
+  A           avg level  3.0 | depth 1, capture search 2, noise 28 cp
+  B           avg level  4.0 | depth 1, capture search 3, noise 24 cp
+  game   1  opening  1  A         vs B          1/2-1/2 (repetition, 94 plies)  B: 0.5/1
+  game   2  opening  1  B         vs A          1-0     (checkmate, 83 plies)  B: 1.5/2
+  game   3  opening  2  A         vs B          0-1     (checkmate, 60 plies)  B: 2.5/3
+  game   4  opening  2  B         vs A          1-0     (checkmate, 55 plies)  B: 3.5/4
+  game   5  opening  3  A         vs B          0-1     (checkmate, 102 plies)  B: 4.5/5
+  game   6  opening  3  B         vs A          0-1     (checkmate, 72 plies)  B: 4.5/6
+  game   7  opening  4  A         vs B          0-1     (checkmate, 56 plies)  B: 5.5/7
+  game   8  opening  4  B         vs A          1-0     (checkmate, 119 plies)  B: 6.5/8
+  game   9  opening  5  A         vs B          0-1     (checkmate, 60 plies)  B: 7.5/9
+  game  10  opening  5  B         vs A          1/2-1/2 (repetition, 114 plies)  B: 8.0/10
+  game  11  opening  6  A         vs B          1-0     (checkmate, 71 plies)  B: 8.0/11
+  game  12  opening  6  B         vs A          1-0     (checkmate, 121 plies)  B: 9.0/12
+  game  13  opening  7  A         vs B          0-1     (checkmate, 44 plies)  B: 10.0/13
+  game  14  opening  7  B         vs A          1/2-1/2 (repetition, 115 plies)  B: 10.5/14
+  game  15  opening  8  A         vs B          0-1     (checkmate, 58 plies)  B: 11.5/15
+  game  16  opening  8  B         vs A          1-0     (checkmate, 115 plies)  B: 12.5/16
+  game  17  opening  9  A         vs B          0-1     (checkmate, 54 plies)  B: 13.5/17
+  game  18  opening  9  B         vs A          1-0     (checkmate, 35 plies)  B: 14.5/18
+  game  19  opening 10  A         vs B          0-1     (checkmate, 160 plies)  B: 15.5/19
+  game  20  opening 10  B         vs A          1-0     (checkmate, 129 plies)  B: 16.5/20
+  game  21  opening 11  A         vs B          0-1     (checkmate, 116 plies)  B: 17.5/21
+  game  22  opening 11  B         vs A          1-0     (checkmate, 137 plies)  B: 18.5/22
+  game  23  opening 12  A         vs B          0-1     (checkmate, 78 plies)  B: 19.5/23
+  game  24  opening 12  B         vs A          0-1     (checkmate, 78 plies)  B: 19.5/24
+
+RESULT  B scored 19.5 / 24 (81.2%)  W 18  D 3  L 3
+Implied Elo difference (B - A): +255
+
+Style profile: average raw score of the positions each side reached
+(after its own moves, from its own point of view; higher = better for that side)
+  factor                     A          B      B - A
+  Material              -435.3      507.4     +942.7
+  Development             -1.8        2.9       +4.8
+  Center control          -5.0        7.1      +12.0
+  Piece placement         -9.4       14.3      +23.7
+  Mobility               -12.5       16.4      +28.9
+  King safety              3.3       -2.1       -5.4
+  Pawn structure           3.6       -4.5       -8.1
+  Passed pawns           -13.5       15.2      +28.6
+  Bishop pair             -3.5        4.4       +8.0
+  Rook activity           -3.5        4.6       +8.2
+  Knight outposts         -0.8        1.0       +1.9
+  Threat awareness         9.1       16.1       +7.0
+  King attack              0.3        0.2       -0.2

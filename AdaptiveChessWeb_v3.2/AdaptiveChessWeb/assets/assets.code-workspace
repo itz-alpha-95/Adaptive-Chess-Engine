@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../css"
+		},
+		{
+			"path": "../engine_server"
+		},
+		{
+			"path": "../js"
+		},
+		{
+			"path": "../node_modules"
+		}
+	]
+}

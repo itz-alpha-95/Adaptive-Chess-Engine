@@ -1,0 +1,11 @@
+Match: master vs grandmaster | 16 games | 24 opening lines x 2 colours
+  master      avg level 15.0 | depth 4, capture search 10, noise  0 cp
+  grandmaster avg level 20.0 | depth 5, capture search 10, noise  0 cp
+  game   1  opening  1  master    vs grandmaster  0-1     (checkmate, 100 plies)  grandmaster: 1.0/1
+  game   2  opening  1  grandmaster vs master     1-0     (checkmate, 125 plies)  grandmaster: 2.0/2
+  game   3  opening  2  master    vs grandmaster  1-0     (checkmate, 115 plies)  grandmaster: 2.0/3
+  game   4  opening  2  grandmaster vs master     1/2-1/2 (repetition, 119 plies)  grandmaster: 2.5/4
+  game   5  opening  3  master    vs grandmaster  1/2-1/2 (repetition, 58 plies)  grandmaster: 3.0/5
+  game   6  opening  3  grandmaster vs master     1/2-1/2 (repetition, 132 plies)  grandmaster: 3.5/6
+  game   7  opening  4  master    vs grandmaster  1/2-1/2 (repetition, 65 plies)  grandmaster: 4.0/7
+  game   8  opening  4  grandmaster vs master     1-0     (checkmate, 51 plies)  grandmaster: 5.0/8

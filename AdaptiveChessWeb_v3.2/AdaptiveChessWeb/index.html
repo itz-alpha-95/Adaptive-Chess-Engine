@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdaptiveEngine — Self-Learning Chess</title>
+    <link rel="icon" type="image/png" href="assets/img/adaptive-engine-knight.png">
+    <link rel="stylesheet" href="css/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/chart.min.js"></script>
+    <script>if (typeof Chart === 'undefined') document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>');</script>
+</head>
+<body onload="switchMainTab('play')">
+
+<!-- ══ TOP NAV ══════════════════════════════════════════════════════════════ -->
+<div class="top-nav">
+    <div class="nav-left">
+        <div class="logo"><img class="brand-logo" src="assets/img/adaptive-engine-knight.png" alt=""><span>AdaptiveEngine</span></div>
+        <a href="#" class="nav-link active" id="nav-play"      onclick="switchMainTab('play')">PLAY</a>
+        <a href="#" class="nav-link"        id="nav-analysis"  onclick="switchMainTab('analysis')">ANALYSIS</a>
+        <a href="#" class="nav-link"        id="nav-train"     onclick="switchMainTab('train')">TRAIN</a>
+        <a href="#" class="nav-link"        id="nav-saved"     onclick="switchMainTab('saved')">SAVED GAMES</a>
+    </div>
+</div>
+
+<div class="app-container">
+
+<!-- ══ LEFT PANEL ═══════════════════════════════════════════════════════════ -->
+<div class="left-panel">
+    <div class="panel-header">
+        <i class="fas fa-chart-bar"></i>
+        <span id="left-panel-title">Active Game</span>
+    </div>
+
+    <div class="score-summary" id="score-summary-bar">
+        <div><span class="dot white-dot"></span> You (White) <span class="score-right" id="score-you" style="color:var(--accent-red)">0</span></div>
+        <div><span class="dot black-dot"></span> AdaptiveEngine (Black) <span class="score-right score-active" id="score-bot">0</span></div>
+    </div>
+
+    <!-- ── PLAY: move history ─────────────────────────────────────────────── -->
+    <div id="left-play-view" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+        <div class="human-rating-row" title="Used for AdaptiveEngine's Elo update after a game against you">
+            <label for="human-elo">Your rating</label>
+            <input type="number" id="human-elo" min="100" max="3000" step="50" value="800">
+        </div>
+        <div class="section-label"><i class="fas fa-list-ol"></i> Move History</div>
+        <div id="move-history" class="move-history"></div>
+        <div class="play-left-bottom">
+            <button id="new-game-play-btn" class="primary-btn w100" style="margin:0 0 6px;">
+                <i class="fas fa-plus"></i> New Game
+            </button>
+            <button id="save-game-btn" class="secondary-btn w100" style="margin:0;">
+                <i class="fas fa-save"></i> Save This Game
+            </button>
+        </div>
+    </div>
+
+    <!-- ── ANALYSIS: game list + annotated moves ─────────────────────────── -->
+    <div id="left-analysis-view" style="display:none;flex:1;flex-direction:column;min-height:0;">
+        <div class="section-label" style="cursor:pointer;" onclick="toggleAnalysisGameList()">
+            <i class="fas fa-history"></i> Recent Games
+            <i class="fas fa-chevron-down" id="game-list-chevron" style="float:right;"></i>
+        </div>
+        <div id="analysis-game-list" class="saved-games-list" style="max-height:140px;"></div>
+        <div style="padding:8px;">
+            <textarea id="pgn-input" placeholder="Paste PGN or FEN here to analyze…" class="pgn-textarea"></textarea>
+            <button onclick="loadPGNorFEN()" class="primary-btn w100" style="margin:4px 0 0;">
+                <i class="fas fa-search"></i> Load & Analyze
+            </button>
+        </div>
+        <div class="analysis-game-action">
+            <button id="new-game-btn" class="primary-btn w100" style="margin:0;">
+                <i class="fas fa-plus"></i> New Game
+            </button>
+        </div>
+    </div>
+
+    <!-- ── TRAIN: settings ───────────────────────────────────────────────── -->
+    <div id="left-train-view" style="display:none;flex:1;flex-direction:column;">
+        <div class="section-label"><i class="fas fa-dumbbell"></i> Auto-Train Settings</div>
+        <div style="padding:12px;display:flex;flex-direction:column;gap:10px;">
+            <div>
+                <div class="field-label">Opponent Strength</div>
+                <select id="sparring-elo" class="dropdown" title="Each sparring bot is the C++ engine at a fixed skill level. Its Elo was measured in bot-vs-bot matches (Beginner = 400), the same scale as AdaptiveEngine's own Elo; it is not a chess.com/FIDE rating.">
+                    <option value="club" selected>Club — 1600 bot-Elo</option>
+                </select>
+            </div>
+            <div class="speed-control">
+                <span>Speed: <strong id="speed-label" style="color:#d39afb;">Normal</strong></span>
+                <input type="range" id="speed-slider" min="1" max="4" value="2">
+            </div>
+            <div>
+                <div class="field-label">Total Games to Run</div>
+                <input type="number" id="train-game-count" value="25" min="1" max="5000" class="dropdown" style="padding:6px 8px;">
+            </div>
+            <button id="auto-play-btn" class="play-maia-btn">
+                <i class="fas fa-robot"></i> Start Auto-Train
+            </button>
+            <div id="brain-scanner" class="brain-scanner" style="display:none;">&gt; Bot is idle…</div>
+            <div style="display:flex;gap:6px;">
+                <button id="export-btn-train" class="primary-btn" style="flex:1;margin:0;font-size:11px;" title="Download AdaptiveEngine's skill stats, Elo and game history as JSON"><i class="fas fa-file-export"></i> Export Stats</button>
+                <button id="import-btn-train" class="secondary-btn" style="flex:1;margin:0;font-size:11px;" title="Load skill stats from an exported JSON file"><i class="fas fa-file-import"></i> Import Stats</button>
+            </div>
+            <button id="clear-db-btn" class="danger-btn w100" style="margin:0;">
+                <i class="fas fa-trash"></i> Wipe Bot Memory
+            </button>
+        </div>
+    </div>
+
+    <!-- ── SAVED: saved game list ─────────────────────────────────────────── -->
+    <div id="left-saved-view" style="display:none;flex:1;flex-direction:column;min-height:0;">
+        <div class="section-label"><i class="fas fa-folder-open"></i> Saved Games</div>
+        <div id="saved-games-list" class="saved-games-list" style="flex:1;"></div>
+        <div style="padding:8px;">
+            <button onclick="clearAllSavedGames()" class="danger-btn w100" style="margin:0;">
+                <i class="fas fa-trash"></i> Delete All Saved
+            </button>
+        </div>
+    </div>
+
+    <!-- Move nav controls ─────────────────────────────────────────────────── -->
+    <div class="move-controls">
+        <button onclick="navFirst()"    title="Start"><i class="fas fa-fast-backward"></i></button>
+        <button onclick="navBack()"     title="Back"><i class="fas fa-step-backward"></i></button>
+        <button onclick="navForward()"  title="Forward"><i class="fas fa-step-forward"></i></button>
+        <button onclick="navLast()"     title="End"><i class="fas fa-fast-forward"></i></button>
+    </div>
+</div>
+
+<!-- ══ CENTER PANEL ═════════════════════════════════════════════════════════ -->
+<div class="center-panel">
+    <div class="board-wrapper">
+        <!-- Vertical Dynamic Eval Bar -->
+        <div class="eval-container">
+            <div class="eval-bar">
+                <div id="eval-fill" class="eval-fill"></div>
+            </div>
+            <span id="eval-text" class="eval-text">0.0</span>
+        </div>
+
+        <div class="board-area">
+            <!-- Engine / Black tag -->
+            <div class="player-tag">
+                <div style="display:flex;align-items:center;">
+                    <i class="fas fa-robot" style="font-size:12px;color:#d39afb;margin-right:6px;"></i>
+                    <span id="black-tag-name" style="font-weight:600;">AdaptiveEngine</span>
+                    <span class="tag-bot" id="bot-depth-badge">Lvl 1 (1-ply) 🐣</span>
+                </div>
+                <div id="engine-elo-tag" class="tag-elo">400</div>
+            </div>
+
+            <!-- Replay overlay -->
+            <div id="replay-overlay" class="replay-overlay" style="display:none;">
+                <span id="replay-title">Viewing Game</span>
+                <button id="close-replay-btn" class="primary-btn">Resume Active Game</button>
+            </div>
+
+            <div style="position:relative;width:480px;height:480px;">
+                <div id="myBoard" style="width:480px;min-width:480px;flex-shrink:0;position:relative;"></div>
+                <svg id="board-arrows-svg" viewBox="0 0 480 480" style="position:absolute;top:0;left:0;width:480px;height:480px;pointer-events:none;z-index:15;"></svg>
+
+                <!-- ══ CHESS.COM STYLE PROMOTION DIALOG ══════════════════ -->
+                <div id="promotion-dialog" class="promotion-dialog" style="display:none;">
+                    <div class="promo-header">PROMOTION</div>
+                    <div class="promo-options">
+                        <div class="promotion-piece" data-piece="q" title="Promote to Queen">
+                            <img id="promo-img-q" src="assets/img/chesspieces/wikipedia/wQ.png" alt="Queen">
+                            <span>Queen</span>
+                        </div>
+                        <div class="promotion-piece" data-piece="n" title="Promote to Knight">
+                            <img id="promo-img-n" src="assets/img/chesspieces/wikipedia/wN.png" alt="Knight">
+                            <span>Knight</span>
+                        </div>
+                        <div class="promotion-piece" data-piece="r" title="Promote to Rook">
+                            <img id="promo-img-r" src="assets/img/chesspieces/wikipedia/wR.png" alt="Rook">
+                            <span>Rook</span>
+                        </div>
+                        <div class="promotion-piece" data-piece="b" title="Promote to Bishop">
+                            <img id="promo-img-b" src="assets/img/chesspieces/wikipedia/wB.png" alt="Bishop">
+                            <span>Bishop</span>
+                        </div>
+                    </div>
+                    <button id="promotion-cancel-btn" title="Cancel promotion">✕ Cancel</button>
+                </div>
+
+                <!-- ══ CHESS.COM STYLE POST-GAME REVIEW OVERLAY ══════════ -->
+                <div id="game-review-overlay" class="review-overlay" style="display:none;">
+                    <div class="review-inner">
+                        <div class="review-board-panel">
+                            <div class="review-board-wrap">
+                                <div id="reviewBoard"></div>
+                                <svg id="review-board-arrows-svg" viewBox="0 0 480 480" aria-hidden="true"></svg>
+                            </div>
+                            <div id="rv-board-move-caption" class="rv-board-move-caption">Final position</div>
+                        </div>
+                        <div class="review-details">
+                        <!-- Top Header -->
+                        <div class="review-header">
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <i class="fas fa-medal" style="color:#d39afb;font-size:15px;"></i>
+                                <span style="font-weight:bold;letter-spacing:0.05em;">GAME REVIEW</span>
+                            </div>
+                            <button onclick="closeGameReview()" class="review-close-btn" title="Close Review">✕</button>
+                        </div>
+
+                        <!-- Result Banner -->
+                        <div id="rv-outcome-banner" class="rv-outcome-banner">
+                            <div id="rv-outcome-title" style="font-size:16px;font-weight:bold;color:#81b64c;">🏆 Victory!</div>
+                            <div id="rv-outcome-desc" style="font-size:11px;color:var(--text-muted);">You won by Checkmate</div>
+                        </div>
+
+                        <!-- Accuracy Badges (You vs Bot) -->
+                        <div class="rv-accuracy-container">
+                            <div class="rv-acc-box white-side">
+                                <div class="rv-acc-side">YOU (White)</div>
+                                <div class="rv-acc-score" id="rv-white-accuracy">85.4%</div>
+                                <div class="rv-acc-label">Accuracy</div>
+                                <div class="rv-acc-perf" id="rv-white-perf">Perf: —</div>
+                                <div class="rv-acc-acpl" id="rv-white-acpl">ACPL: —</div>
+                            </div>
+                            <div class="rv-acc-vs">vs</div>
+                            <div class="rv-acc-box black-side">
+                                <div class="rv-acc-side">ADAPTIVEENGINE (Black)</div>
+                                <div class="rv-acc-score" id="rv-black-accuracy">72.1%</div>
+                                <div class="rv-acc-label">Accuracy</div>
+                                <div class="rv-acc-perf black-perf" id="rv-black-perf">Perf: —</div>
+                                <div class="rv-acc-acpl" id="rv-black-acpl">ACPL: —</div>
+                            </div>
+                        </div>
+
+                        <!-- Ups & Downs Timeline Chart -->
+                        <div style="position:relative;margin-bottom:8px;">
+                            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-bottom:3px;">
+                                <span><i class="fas fa-chart-line"></i> Advantage Flow (Click to Jump)</span>
+                                <span id="rv-chart-move-count" style="font-family:monospace;">0 moves</span>
+                            </div>
+                            <div style="height:68px;background:rgba(0,0,0,0.35);border-radius:6px;padding:3px 6px;cursor:pointer;">
+                                <canvas id="reviewEvalChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Key Moments / Turning Points -->
+                        <div style="font-size:10px;font-weight:bold;color:var(--text-muted);margin-bottom:3px;display:flex;justify-content:space-between;">
+                            <span><i class="fas fa-crosshairs" style="color:#ff6b6b;"></i> Key Moments</span>
+                            <span style="font-size:9px;color:var(--text-muted);">Decisive Swings</span>
+                        </div>
+                        <div id="rv-key-moments" style="display:flex;gap:4px;margin-bottom:8px;overflow-x:auto;padding-bottom:2px;"></div>
+
+                        <!-- Detailed Move Breakdown Comparison Table -->
+                        <div class="rv-breakdown-table">
+                            <div class="rv-table-row header">
+                                <span>You</span>
+                                <span style="text-align:center;">Classification</span>
+                                <span style="text-align:right;">AdaptiveEngine</span>
+                            </div>
+                            <div class="rv-table-row">
+                                <strong id="rv-you-brilliant" style="color:#26c2a3;">0</strong>
+                                <span><span class="rv-dot brilliant"></span> 💎 Brilliant</span>
+                                <strong id="rv-bot-brilliant" style="color:#26c2a3;text-align:right;">0</strong>
+                            </div>
+                            <div class="rv-table-row">
+                                <strong id="rv-you-best" style="color:#81b64c;">0</strong>
+                                <span><span class="rv-dot best"></span> ★ Best Move</span>
+                                <strong id="rv-bot-best" style="color:#81b64c;text-align:right;">0</strong>
+                            </div>
+                            <div class="rv-table-row">
+                                <strong id="rv-you-good" style="color:#5e81ac;">0</strong>
+                                <span><span class="rv-dot good"></span> ✓ Excellent</span>
+                                <strong id="rv-bot-good" style="color:#5e81ac;text-align:right;">0</strong>
+                            </div>
+                            <div class="rv-table-row">
+                                <strong id="rv-you-inaccuracies" style="color:#ebcb8b;">0</strong>
+                                <span><span class="rv-dot inaccuracy"></span> ❓ Inaccuracy</span>
+                                <strong id="rv-bot-inaccuracies" style="color:#ebcb8b;text-align:right;">0</strong>
+                            </div>
+                            <div class="rv-table-row">
+                                <strong id="rv-you-mistakes" style="color:#d08770;">0</strong>
+                                <span><span class="rv-dot mistake"></span> ⚠️ Mistake</span>
+                                <strong id="rv-bot-mistakes" style="color:#d08770;text-align:right;">0</strong>
+                            </div>
+                            <div class="rv-table-row">
+                                <strong id="rv-you-missed" style="color:#ff6b6b;">0</strong>
+                                <span><span class="rv-dot missed"></span> ⚡ Missed Win</span>
+                                <strong id="rv-bot-missed" style="color:#ff6b6b;text-align:right;">0</strong>
+                            </div>
+                            <div class="rv-table-row">
+                                <strong id="rv-you-blunders" style="color:#c95c5c;">0</strong>
+                                <span><span class="rv-dot blunder"></span> ❌ Blunder</span>
+                                <strong id="rv-bot-blunders" style="color:#c95c5c;text-align:right;">0</strong>
+                            </div>
+                        </div>
+
+                        <!-- Move Stepper Description Card -->
+                        <div id="rv-move-detail" class="rv-move-card">
+                            <span style="color:var(--text-muted);">Click any move below or use arrows to review the board.</span>
+                        </div>
+                        <div style="font-size:9px;color:var(--text-muted);text-align:center;margin-bottom:6px;">
+                            ⌨ Tip: Use <strong style="color:#88c0d0;">← / →</strong> arrow keys to step moves
+                        </div>
+
+                        <!-- Move Navigator Chips -->
+                        <div class="rv-nav">
+                            <button onclick="reviewNavPrev()" class="rv-nav-btn" title="Previous Move"><i class="fas fa-chevron-left"></i></button>
+                            <div id="rv-moves-list" class="rv-moves-scroll"></div>
+                            <button onclick="reviewNavNext()" class="rv-nav-btn" title="Next Move"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div style="display:flex;gap:6px;margin-top:8px;">
+                            <button id="rv-autoplay-btn" onclick="toggleReviewAutoPlay()" class="secondary-btn" style="flex:1.2;font-size:11px;padding:7px 0;background:#322e3d;border-color:rgba(211,154,251,0.3);color:#d39afb;">
+                                <i class="fas fa-play"></i> Auto Walkthrough
+                            </button>
+                            <button id="rv-new-game-btn" onclick="startNewGameFromReview()" class="primary-btn" style="flex:1;font-size:11px;padding:7px 0;">
+                                <i class="fas fa-redo"></i> New Game
+                            </button>
+                            <button onclick="closeGameReview()" class="secondary-btn" style="flex:1;font-size:11px;padding:7px 0;">
+                                <i class="fas fa-chess-board"></i> Explore
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend for Board Arrows -->
+
+            <!-- Human / White tag -->
+            <div class="player-tag bottom-tag">
+                <div style="display:flex;align-items:center;">
+                    <i class="fas fa-user" style="font-size:11px;color:#fff;margin-right:6px;"></i>
+                    <span id="human-tag-name" style="font-weight:600;">You</span>
+                    <span id="human-tag-role" style="font-size:10px;color:var(--text-muted);margin-left:4px;">(Human)</span>
+                </div>
+                <div id="human-tag-elo" class="tag-elo" style="color:var(--text-muted);display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ══ RIGHT PANEL ══════════════════════════════════════════════════════════ -->
+<div class="right-panel">
+
+    <!-- ── PLAY view ─────────────────────────────────────────────────────── -->
+    <div id="right-play-view" style="display:flex;flex-direction:column;height:100%;gap:10px;overflow-y:auto;">
+
+        <!-- Engine status -->
+        <div class="dash-box">
+            <div class="dash-header">
+                <i class="fas fa-brain" style="color:var(--accent);margin-right:6px;"></i>
+                AdaptiveEngine AI Learning &amp; Rating
+                <span id="game-accuracy-badge" class="acc-badge" style="display:none;"></span>
+            </div>
+            <div class="dash-content" style="padding:10px 14px;">
+                <div class="stat-grid-3">
+                    <div class="stat-cell">
+                        <div class="stat-label">Bot Evolving Elo</div>
+                        <div class="stat-val accent" id="stat-elo-play">400</div>
+                    </div>
+                    <div class="stat-cell">
+                        <div class="stat-label">Bot Games Played</div>
+                        <div class="stat-val" id="stat-games-play">0</div>
+                    </div>
+                    <div class="stat-cell">
+                        <div class="stat-label">Bot Record (W/L/D)</div>
+                        <div class="stat-val accent" id="stat-wld-play">0/0/0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Move Evaluation Ups & Downs Bar -->
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header">
+                <i class="fas fa-chart-line" style="color:#81b64c;margin-right:6px;"></i>
+                Moves Advantage Flow (Ups &amp; Downs Bar)
+                <span style="float:right;font-size:9px;color:var(--text-muted);" id="eval-chart-stat">+0.00</span>
+            </div>
+            <div style="height:90px;padding:4px 8px;">
+                <canvas id="evalHistoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Adaptive Weights -->
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header"><i class="fas fa-sliders-h" style="color:#d39afb;margin-right:6px;"></i>AdaptiveEngine Skill Stats <span style="font-weight:normal;color:var(--text-muted);font-size:10px;">(no maximum level)</span></div>
+            <div class="dash-content" style="padding:10px 14px;">
+                <div id="weights-display" class="weights-bars"></div>
+                <div style="display:flex;gap:6px;margin-top:8px;">
+                    <button id="export-btn" class="primary-btn" style="flex:1;margin:0;font-size:11px;padding:5px;" title="Download AdaptiveEngine's skill stats, Elo and game history as JSON"><i class="fas fa-file-export"></i> Export Stats (JSON)</button>
+                    <button id="import-btn" class="secondary-btn" style="flex:1;margin:0;font-size:11px;padding:5px;" title="Load skill stats from an exported JSON file"><i class="fas fa-file-import"></i> Import Stats</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Elo History -->
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header"><i class="fas fa-chart-line" style="color:#81b64c;margin-right:6px;"></i>Elo History</div>
+            <div style="height:80px;padding:6px 10px;">
+                <canvas id="miniEloChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Learning log -->
+        <div class="dash-box" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+            <div class="dash-header"><i class="fas fa-database" style="color:#ebcb8b;margin-right:6px;"></i>Brain Learning Log</div>
+            <div id="dev-logs-play" class="log-scroll" style="flex:1;min-height:0;"></div>
+            <div style="padding:8px;border-top:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;gap:6px;">
+                    <button id="export-btn-play" class="primary-btn" style="flex:1;margin:0;font-size:11px;"><i class="fas fa-file-export"></i> Export Stats</button>
+                    <button id="import-btn-play" class="secondary-btn" style="flex:1;margin:0;font-size:11px;"><i class="fas fa-file-import"></i> Import Stats</button>
+                </div>
+                <button id="clear-db-btn-play" class="danger-btn" style="margin:0;"><i class="fas fa-trash"></i> Wipe Bot Memory</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── ANALYSIS view ──────────────────────────────────────────────────── -->
+    <div id="right-analysis-view" style="display:none;height:100%;flex-direction:column;gap:10px;overflow-y:auto;">
+
+        <!-- Win probability bar + eval number -->
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header" style="display:flex;justify-content:space-between;align-items:center;">
+                <span><i class="fas fa-tachometer-alt" style="color:var(--accent);margin-right:6px;"></i>Position Win Probability &amp; Eval</span>
+                <span id="an-eval-num" style="font-family:monospace;font-size:15px;font-weight:bold;color:#5e81ac;">0.00</span>
+            </div>
+            <div style="padding:10px 14px;">
+                <!-- Win probability bar -->
+                <div class="win-prob-wrapper">
+                    <div id="an-white-bar" class="win-prob-bar white" style="width:50%;">
+                        <span id="an-white-pct">White 50%</span>
+                    </div>
+                    <div id="an-black-bar" class="win-prob-bar black" style="width:50%;">
+                        <span id="an-black-pct">Black 50%</span>
+                    </div>
+                </div>
+                <!-- Summary text -->
+                <div id="an-summary" style="font-size:11px;color:var(--text-muted);line-height:1.5;min-height:28px;">Calculating real-time position analysis…</div>
+            </div>
+        </div>
+
+        <!-- Opening Theory & ECO -->
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header" style="display:flex;justify-content:space-between;align-items:center;">
+                <span><i class="fas fa-book-open" style="color:#d39afb;margin-right:6px;"></i>Opening Theory &amp; ECO</span>
+                <span id="an-eco-badge" style="font-family:monospace;font-size:10px;font-weight:bold;background:rgba(211,154,251,0.18);color:#d39afb;padding:2px 7px;border-radius:4px;border:1px solid rgba(211,154,251,0.3);">ECO A00</span>
+            </div>
+            <div style="padding:10px 14px;">
+                <div id="an-opening-title" style="font-size:13px;font-weight:bold;color:#fff;margin-bottom:3px;">Starting Position</div>
+                <div id="an-opening-desc" style="font-size:11px;color:var(--text-muted);line-height:1.45;margin-bottom:8px;">Make moves on the board to identify the opening line.</div>
+                <div id="an-opening-ideas" style="font-size:10px;background:rgba(0,0,0,0.25);border-radius:4px;padding:6px 9px;color:#88c0d0;line-height:1.45;border:1px solid rgba(255,255,255,0.05);">
+                    <i class="fas fa-lightbulb" style="color:#ebcb8b;margin-right:4px;"></i><strong>Key Plan:</strong> <span id="an-opening-plan">Control central squares e4/d4, develop minor pieces, secure king safety.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tactical Threat Scanner -->
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header"><i class="fas fa-shield-alt" style="color:#d39afb;margin-right:6px;"></i>Live Tactical Threat Radar</div>
+            <div id="an-threat-radar" style="padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px;">
+                <span class="threat-chip safe"><i class="fas fa-check-circle"></i> Position Stable</span>
+            </div>
+        </div>
+
+
+        <!-- Move quality breakdown bars -->
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header"><i class="fas fa-chart-bar" style="color:#5e81ac;margin-right:6px;"></i>Move Quality Distribution</div>
+            <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px;">
+                <div class="quality-row">
+                    <span class="quality-label" style="color:#81b64c;">★ Best</span>
+                    <div class="quality-bar-bg"><div id="cat-best-bar" class="quality-bar" style="background:#81b64c;"></div></div>
+                    <span class="quality-count" id="cat-best-bar-label">0</span>
+                </div>
+                <div class="quality-row">
+                    <span class="quality-label" style="color:#ebcb8b;">? Inaccuracy</span>
+                    <div class="quality-bar-bg"><div id="cat-inaccuracy-bar" class="quality-bar" style="background:#ebcb8b;"></div></div>
+                    <span class="quality-count" id="cat-inaccuracy-bar-label">0</span>
+                </div>
+                <div class="quality-row">
+                    <span class="quality-label" style="color:#d08770;">?? Mistake</span>
+                    <div class="quality-bar-bg"><div id="cat-mistake-bar" class="quality-bar" style="background:#d08770;"></div></div>
+                    <span class="quality-count" id="cat-mistake-bar-label">0</span>
+                </div>
+                <div class="quality-row">
+                    <span class="quality-label" style="color:#c95c5c;">✗ Blunder</span>
+                    <div class="quality-bar-bg"><div id="cat-blunder-bar" class="quality-bar" style="background:#c95c5c;"></div></div>
+                    <span class="quality-count" id="cat-blunder-bar-label">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── TRAIN view ─────────────────────────────────────────────────────── -->
+    <div id="right-train-view" style="display:none;flex-direction:column;height:100%;gap:10px;overflow-y:auto;">
+
+        <div class="dash-box">
+            <div class="dash-header"><i class="fas fa-chart-area" style="color:#d39afb;margin-right:6px;"></i>Training Progress — Elo and ACPL per Game</div>
+            <div style="height:200px;padding:6px 10px;">
+                <canvas id="trainChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Proof of Engine Improvement Card -->
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header" style="display:flex;justify-content:space-between;align-items:center;">
+                <span><i class="fas fa-certificate" style="color:#81b64c;margin-right:6px;"></i>Learning Evidence</span>
+                <span id="proof-early-badge" style="font-size:10px;background:rgba(211,154,251,0.2);color:#d39afb;padding:2px 6px;border-radius:3px;font-weight:bold;">Learning: C++ engine</span>
+            </div>
+            <div class="dash-content" style="padding:10px 14px;display:flex;flex-direction:column;gap:10px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div class="stat-cell" style="text-align:left;padding:8px 10px;">
+                        <div class="stat-label">Search Depth</div>
+                        <div style="font-size:13px;font-weight:bold;color:#81b64c;" id="proof-depth-text">Level 1 (1-ply)</div>
+                        <div style="font-size:9px;color:var(--text-muted);margin-top:2px;" id="proof-depth-sub">Calculation 1.0 · next level at 5</div>
+                    </div>
+                    <div class="stat-cell" style="text-align:left;padding:8px 10px;">
+                        <div class="stat-label">Last Game Review</div>
+                        <div style="font-size:13px;font-weight:bold;color:#ebcb8b;" id="proof-blunder-text">—</div>
+                        <div style="font-size:9px;color:var(--text-muted);margin-top:2px;" id="proof-blunder-sub">Appears after the first game</div>
+                    </div>
+                    <div class="stat-cell" style="text-align:left;padding:8px 10px;">
+                        <div class="stat-label">Biggest Gain Last Game</div>
+                        <div style="font-size:13px;font-weight:bold;color:#5e81ac;" id="proof-defense-text">—</div>
+                        <div style="font-size:9px;color:var(--text-muted);margin-top:2px;" id="proof-defense-sub">4.0 points next game</div>
+                    </div>
+                    <div class="stat-cell" style="text-align:left;padding:8px 10px;">
+                        <div class="stat-label">Average Skill Level</div>
+                        <div style="font-size:13px;font-weight:bold;color:#d39afb;" id="proof-decay-text">1.0 / 20</div>
+                        <div style="font-size:9px;color:var(--text-muted);margin-top:2px;" id="proof-decay-sub">Full knowledge at 10</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="stat-label" style="margin-bottom:6px;" title="Reached when AdaptiveEngine's Elo matches the measured rating of that sparring bot">Rated like the sparring bots:</div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;" id="milestone-badges">
+                        <span class="milestone-badge unlocked" id="badge-400">🥉 Beginner 400</span>
+                        <span class="milestone-badge unlocked" id="badge-520">🥈 Novice 1010</span>
+                        <span class="milestone-badge" id="badge-750">🥇 Club 1600</span>
+                        <span class="milestone-badge" id="badge-1100">🏆 Expert 1940</span>
+                    </div>
+                </div>
+
+                <div style="background:rgba(0,0,0,0.25);border-radius:4px;padding:8px;font-size:11px;">
+                    <div style="color:var(--text-muted);font-weight:bold;margin-bottom:4px;display:flex;justify-content:space-between;">
+                        <span>Internal Elo since baseline</span>
+                        <span style="color:#81b64c;font-weight:bold;" id="proof-comparison-gain">+0 Elo Gain</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;color:#a0a0a0;font-size:10px;">
+                        <div>Game 0: <span style="color:#fff;">400 Elo | Level 1</span></div>
+                        <i class="fas fa-arrow-right" style="color:var(--text-muted);margin:0 4px;"></i>
+                        <div>Current: <strong style="color:#81b64c;" id="proof-comparison-current">400 Elo | Level 1</strong></div>
+                    </div>
+                    <div style="color:var(--text-muted);font-size:10px;margin-top:6px;">Head-to-head proof: run <strong>match.bat</strong> (learned bot vs a brand-new beginner).</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weight evolution -->
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header"><i class="fas fa-sliders-h" style="margin-right:6px;color:#d39afb;"></i>Skill Stats (live) <span style="font-weight:normal;color:var(--text-muted);font-size:10px;">10 = full knowledge · no maximum</span></div>
+            <div class="dash-content" style="padding:10px 14px;">
+                <div id="weights-display-train" class="weights-bars"></div>
+            </div>
+        </div>
+
+        <!-- Live log -->
+        <div class="dash-box" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+            <div class="dash-header">Live Training Log</div>
+            <div id="train-log" class="log-scroll" style="flex:1;min-height:0;"></div>
+        </div>
+    </div>
+
+    <!-- ── SAVED view ─────────────────────────────────────────────────────── -->
+    <div id="right-saved-view" style="display:none;flex-direction:column;height:100%;gap:10px;">
+        <div class="dash-box" style="flex:0 0 auto;">
+            <div class="dash-header"><i class="fas fa-info-circle" style="color:var(--accent);margin-right:6px;"></i>Game Info</div>
+            <div id="saved-game-info" class="dash-content" style="font-size:12px;color:var(--text-muted);">
+                Select a saved game from the left panel to view details.
+            </div>
+        </div>
+        <div class="dash-box" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+            <div class="dash-header">Move List</div>
+            <div id="saved-game-moves" class="log-scroll" style="flex:1;min-height:0;font-size:12px;"></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <button id="load-saved-btn" class="primary-btn" style="flex:1;margin:0;" onclick="loadSelectedSavedGame()">
+                <i class="fas fa-play"></i> Play / Replay
+            </button>
+            <button id="delete-saved-btn" class="danger-btn" style="flex:1;margin:0;" onclick="deleteSelectedSavedGame()">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+        </div>
+    </div>
+
+</div><!-- end right-panel -->
+</div><!-- end app-container -->
+
+<!-- ══ LIVE ENGINE EVOLUTION CARD (Floating Toast) ════════════════════════ -->
+<div id="engine-evolution-card" class="evolution-card" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:bold;color:#d39afb;font-size:12px;"><i class="fas fa-dna"></i> ENGINE EVOLUTION</span>
+        <span style="font-size:10px;color:var(--text-muted);" id="evo-game-num">Game #1</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:8px;margin:6px 0;">
+        <span style="font-size:18px;font-weight:bold;" id="evo-elo-change">+0.0 Elo</span>
+        <span style="font-size:12px;color:var(--text-muted);" id="evo-elo-range">(400.0 → 400.0)</span>
+        <span class="evo-pill loss" id="evo-result-pill">BOT LOST</span>
+    </div>
+    <div style="font-size:11px;color:#cbd5e1;line-height:1.4;" id="evo-weights-detail">
+        The post-game review appears here.
+    </div>
+    <div id="evo-milestone-alert" style="display:none;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:#81b64c;font-weight:bold;">
+
+    </div>
+</div>
+
+<!-- ══ ENGINE CONSOLE (floating) ════════════════════════════════════════════ -->
+<div id="engine-terminal">
+    <div id="terminal-header">
+        <span><i class="fas fa-terminal"></i> ADAPTIVEENGINE CONSOLE</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:10px;cursor:pointer;color:#9c9a9e;" onclick="$('#terminal-output').empty()" title="Clear Output"><i class="fas fa-eraser"></i></span>
+            <span style="cursor:pointer;" onclick="toggleTerminal(false)"><i class="fas fa-minus"></i></span>
+        </div>
+    </div>
+    <div id="terminal-output">
+        <div class="term-line info">&gt; AdaptiveEngine v4.2 initialised.</div>
+        <div class="term-line">&gt; Search: Minimax + Alpha-Beta + transposition table + capture search; depth from Calculation, 2 s per move.</div>
+        <div class="term-line">&gt; Starts as a beginner; after every game a coach reviews each move and awards stat points (4 per game for the first 50 games, then fewer, never below 1).</div>
+        <div class="term-line">&gt; Waiting for first move…</div>
+    </div>
+</div>
+<button class="terminal-fab" onclick="toggleTerminal(true)" id="terminal-fab" style="display:none;" title="Open the engine console">
+    &gt;_ Console
+</button>
+
+<!-- ══ SAVE GAME MODAL ═══════════════════════════════════════════════════════ -->
+<div id="save-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-title"><i class="fas fa-save"></i> Save Current Game</div>
+        <input type="text" id="save-game-name" placeholder="Game name (optional)" class="modal-input">
+        <div style="display:flex;gap:8px;margin-top:10px;">
+            <button onclick="confirmSaveGame()" class="primary-btn" style="flex:1;margin:0;">Save</button>
+            <button onclick="closeSaveModal()" class="secondary-btn" style="flex:1;margin:0;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden file input -->
+<input type="file" id="import-file" style="display:none;" accept=".json">
+
+<!-- Audio -->
+<audio id="sfx-move"    src="assets/sounds/move-self.mp3"></audio>
+<audio id="sfx-capture" src="assets/sounds/capture.mp3"></audio>
+<audio id="sfx-check"   src="assets/sounds/move-check.mp3"></audio>
+<audio id="sfx-end"     src="assets/sounds/game-end.mp3"></audio>
+
+<script src="js/jquery-3.6.0.min.js"></script>
+<script>if (typeof window.jQuery === 'undefined') document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');</script>
+<script src="js/chessboard-1.0.0.min.js"></script>
+<script src="js/chess.min.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

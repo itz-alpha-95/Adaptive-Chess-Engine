@@ -1,0 +1,37 @@
+[INFO] Elo 400.0 | Games 0 (W 0 / L 0 / D 0) | depth 1, capture search 0, noise 36 cp
+[INFO] Skill levels: Development 1.0, Center control 1.0, Piece placement 1.0, Mobility 1.0, King safety 1.0, Pawn structure 1.0, Passed pawns 1.0, Bishop pair 1.0, Rook activity 1.0, Knight outposts 1.0, Threat awareness 1.0, King attack 1.0, Calculation 1.0
+Training: 60 games against club (Elo 800)
+  club        avg level  5.0 | depth 2, capture search 4, noise 20 cp
+  G1    loss as White (checkmate, 40 plies) | Elo  397 | depth 1 | Review: accuracy 94%, ACPL 20, 0 inaccuracies, 1 mistake, 1 blunder. Points: +1.7 Calculation, +0.6 Piece placement, +0.2 Center control.
+  G2    loss as Black (checkmate, 109 plies) | Elo  394 | depth 1 | Review: accuracy 91%, ACPL 30, 4 inaccuracies, 6 mistakes, 1 blunder. Points: +1.9 Calculation, +0.5 Threat awareness, +0.4 Piece placement.
+  G3    loss as White (checkmate, 88 plies) | Elo  391 | depth 2 | Review: accuracy 86%, ACPL 44, 10 inaccuracies, 6 mistakes, 1 blunder. Points: +1.6 Calculation, +0.3 Threat awareness, +0.3 Piece placement.
+  G4    loss as Black (checkmate, 129 plies) | Elo  389 | depth 2 | Review: accuracy 93%, ACPL 22, 9 inaccuracies, 6 mistakes, 0 blunders. Points: +1.8 Calculation, +0.7 Piece placement, +0.3 Development.
+  G5    loss as White (checkmate, 226 plies) | Elo  386 | depth 2 | Review: accuracy 93%, ACPL 20, 13 inaccuracies, 5 mistakes, 1 blunder. Points: +1.5 Calculation, +0.5 Piece placement, +0.2 Mobility.
+  G6    loss as Black (checkmate, 107 plies) | Elo  383 | depth 3 | Review: accuracy 92%, ACPL 26, 7 inaccuracies, 5 mistakes, 1 blunder. Points: +1.3 Calculation, +0.3 Piece placement, +0.3 Mobility.
+  G7    win  as White (checkmate, 73 plies) | Elo  413 | depth 3 | Review: accuracy 96%, ACPL 14, 3 inaccuracies, 1 mistake, 0 blunders. Points: +0.7 Piece placement, +0.7 Calculation, +0.5 Pawn structure.
+  G8    win  as Black (checkmate, 42 plies) | Elo  441 | depth 3 | Review: accuracy 96%, ACPL 11, 2 inaccuracies, 1 mistake, 0 blunders. Points: +1.1 Piece placement, +0.4 Calculation, +0.4 Development.
+  G9    draw as White (repetition, 73 plies) | Elo  454 | depth 3 | Review: accuracy 97%, ACPL 10, 4 inaccuracies, 0 mistakes, 0 blunders. Points: +0.9 Calculation, +0.6 Mobility, +0.5 King safety.
+  G10   win  as Black (checkmate, 122 plies) | Elo  482 | depth 3 | Review: accuracy 98%, ACPL 6, 2 inaccuracies, 1 mistake, 0 blunders. Points: +1.1 Calculation, +0.8 King safety, +0.6 Mobility.
+        levels: Development 2.4, Center control 2.6, Piece placement 6.2, Mobility 3.7, King safety 3.1, Pawn structure 1.7, Passed pawns 1.1, Bishop pair 1.1, Rook activity 1.9, Knight outposts 1.4, Threat awareness 2.8, King attack 1.2, Calculation 13.8
+  G11   draw as White (repetition, 84 plies) | Elo  494 | depth 3 | Review: accuracy 98%, ACPL 6, 2 inaccuracies, 0 mistakes, 0 blunders. Points: +1.2 Calculation, +0.7 King safety, +0.5 Mobility.
+  G12   loss as Black (checkmate, 107 plies) | Elo  489 | depth 4 | Review: accuracy 98%, ACPL 6, 4 inaccuracies, 0 mistakes, 0 blunders. Points: +0.7 Calculation, +0.6 Mobility, +0.4 Bishop pair.
+  G13   draw as White (repetition, 68 plies) | Elo  500 | depth 4 | Review: accuracy 97%, ACPL 9, 0 inaccuracies, 2 mistakes, 0 blunders. Points: +1.3 Calculation, +0.5 Development, +0.4 King safety.
+  G14   draw as Black (repetition, 100 plies) | Elo  511 | depth 4 | Review: accuracy 97%, ACPL 8, 3 inaccuracies, 1 mistake, 0 blunders. Points: +0.9 Calculation, +0.7 Piece placement, +0.7 Threat awareness.
+  G15   win  as White (checkmate, 155 plies) | Elo  538 | depth 4 | Review: accuracy 97%, ACPL 8, 9 inaccuracies, 0 mistakes, 0 blunders. Points: +0.7 Threat awareness, +0.6 Calculation, +0.5 Mobility.
+  G16   win  as Black (checkmate, 108 plies) | Elo  565 | depth 4 | Review: accuracy 96%, ACPL 13, 5 inaccuracies, 2 mistakes, 0 blunders. Points: +0.8 Calculation, +0.4 Center control, +0.4 Bishop pair.
+  G17   win  as White (checkmate, 115 plies) | Elo  590 | depth 5 | Review: accuracy 97%, ACPL 10, 9 inaccuracies, 0 mistakes, 0 blunders. Points: +1.2 Calculation, +0.7 Piece placement, +0.3 Rook activity.
+  G18   win  as Black (checkmate, 48 plies) | Elo  615 | depth 5 | Review: accuracy 98%, ACPL 8, 2 inaccuracies, 0 mistakes, 0 blunders. Points: +0.7 Development, +0.6 Calculation, +0.5 Mobility.
+  G19   win  as White (checkmate, 55 plies) | Elo  638 | depth 5 | Review: accuracy 97%, ACPL 9, 3 inaccuracies, 0 mistakes, 0 blunders. Points: +1.1 Calculation, +0.8 Bishop pair, +0.6 Mobility.
+  G20   win  as Black (checkmate, 76 plies) | Elo  661 | depth 5 | Review: accuracy 96%, ACPL 13, 4 inaccuracies, 1 mistake, 0 blunders. Points: +1.5 Calculation, +0.4 Rook activity, +0.4 Mobility.
+        levels: Development 4.1, Center control 3.8, Piece placement 9.2, Mobility 7.7, King safety 5.7, Pawn structure 1.9, Passed pawns 1.1, Bishop pair 3.3, Rook activity 3.3, Knight outposts 1.4, Threat awareness 5.8, King attack 2.0, Calculation 23.7
+  G21   win  as White (checkmate, 105 plies) | Elo  683 | depth 5 | Review: accuracy 96%, ACPL 11, 3 inaccuracies, 2 mistakes, 0 blunders. Points: +1.0 Calculation, +0.7 Piece placement, +0.7 Center control.
+  G22   win  as Black (checkmate, 38 plies) | Elo  705 | depth 6 | Review: accuracy 94%, ACPL 19, 4 inaccuracies, 1 mistake, 0 blunders. Points: +1.2 Threat awareness, +1.2 Calculation, +0.2 Center control.
+  G23   win  as White (checkmate, 123 plies) | Elo  725 | depth 6 | Review: accuracy 98%, ACPL 5, 4 inaccuracies, 0 mistakes, 0 blunders. Points: +0.6 Mobility, +0.6 Rook activity, +0.5 Piece placement.
+  G24   win  as Black (checkmate, 94 plies) | Elo  744 | depth 6 | Review: accuracy 97%, ACPL 8, 3 inaccuracies, 0 mistakes, 0 blunders. Points: +0.5 Development, +0.5 Knight outposts, +0.3 Pawn structure.
+  G25   win  as White (checkmate, 43 plies) | Elo  763 | depth 6 | Review: accuracy 93%, ACPL 21, 0 inaccuracies, 3 mistakes, 0 blunders. Points: +1.4 Calculation, +0.6 Bishop pair, +0.3 Mobility.
+  G26   win  as Black (checkmate, 72 plies) | Elo  781 | depth 6 | Review: accuracy 95%, ACPL 15, 4 inaccuracies, 1 mistake, 0 blunders. Points: +0.4 Development, +0.4 Mobility, +0.4 Calculation.
+  G27   win  as White (checkmate, 37 plies) | Elo  797 | depth 6 | Review: accuracy 94%, ACPL 20, 1 inaccuracy, 2 mistakes, 0 blunders. Points: +1.6 Calculation, +0.5 Piece placement, +0.4 Mobility.
+  G28   win  as Black (checkmate, 62 plies) | Elo  814 | depth 7 | Review: accuracy 88%, ACPL 40, 3 inaccuracies, 0 mistakes, 3 blunders. Points: +1.9 Calculation, +0.3 King safety, +0.2 Bishop pair.
+  G29   win  as White (checkmate, 61 plies) | Elo  829 | depth 7 | Review: accuracy 96%, ACPL 12, 2 inaccuracies, 2 mistakes, 0 blunders. Points: +0.7 Calculation, +0.7 Threat awareness, +0.6 Piece placement.
+  G30   draw as Black (repetition, 82 plies) | Elo  828 | depth 7 | Review: accuracy 94%, ACPL 17, 2 inaccuracies, 3 mistakes, 0 blunders. Points: +1.3 Calculation, +1.1 Threat awareness, +0.2 Passed pawns.
+        levels: Development 5.2, Center control 6.5, Piece placement 12.4, Mobility 10.3, King safety 7.4, Pawn structure 2.6, Passed pawns 1.7, Bishop pair 4.9, Rook activity 4.1, Knight outposts 2.1, Threat awareness 9.6, King attack 2.4, Calculation 33.7
